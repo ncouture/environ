@@ -1,5 +1,3 @@
-#!/bin/bash # emacs sh-mode + global-font-lock-mode :)
-
 # source from ~/.bashrc 
 
 # default command arguments
