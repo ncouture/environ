@@ -1,0 +1,128 @@
+;; .emacs
+;; color-theme is a mixt between high-contrast and hober  
+(color-theme-initialize)
+(color-theme-high-contrast)
+(color-theme-hober)
+
+;; https://github.com/gabrielelanaro/emacs-for-python
+(load-file "~/.emacs.d/emacs-for-python/epy-init.el")
+(add-to-list 'load-path "~/.emacs.d/emacs-for-python/")
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+(add-to-list 'load-path "~/dev/rust/src/etc/emacs/")
+
+(require 'whine)
+(whinify)
+
+(require 'epy-setup)
+(require 'epy-python)
+(require 'epy-completion)
+(require 'epy-editing)
+(require 'epy-bindings)
+(require 'rust-mode)
+
+;; disable loading of "default.el" at startup
+(setq inhibit-default-init t)
+
+;; turn on font-lock mode
+(when (fboundp 'global-font-lock-mode)
+  (global-font-lock-mode t))
+
+;; enable visual feedback on selections
+(setq transient-mark-mode t)
+
+;; default to better frame titles
+(setq frame-title-format "emacs %b")
+
+;; default to unified diffs
+(setq diff-switches "-u")
+
+;; always end a file with a newline
+(setq require-final-newline t)
+
+;; Invoke M-x without the Alt key
+(global-set-key "\C-x\C-m" 'execute-extended-command)
+(global-set-key "\C-c\C-m" 'execute-extended-command)
+(global-set-key "\C-c\C-j\c" 'jabber-connect)
+
+;; Prefer backward-kill-word over Backspace
+(global-set-key "\C-w"     'backward-kill-word)
+(global-set-key "\C-x\C-k" 'kill-region)
+(global-set-key "\C-c\C-k" 'kill-region)
+
+;; Lose the UI
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+
+;; 3rd party
+(add-to-list 'load-path "~/elisp/")
+(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+
+;(require 'pycomplete)
+(autoload 'python-mode "python-mode" "Python Mode." t)
+(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
+(add-to-list 'auto-mode-alist '("\\.psl\\'" . perl-mode))
+(add-to-list 'interpreter-mode-alist '("python" . python-mode))
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(org-export-html-expand t)
+ '(org-export-html-inline-images t)
+ '(org-export-html-link-org-files-as-html t)
+ '(org-export-html-style "")
+ '(org-export-html-toplevel-hlevel 2)
+ '(org-export-html-with-timestamp nil)
+ '(org-export-with-timestamps nil)
+ '(org-link-mailto-program (quote (browse-url)))
+ '(org-show-siblings (quote ((link-search . t) (tags-tree . t) (default . t)))))
+
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+)
+
+;; JABBER
+(setq jabber-account-list '(
+                            ("nicolasc@bambam"
+                              (:network-server . "bambam")
+                              (:port . 5223)
+			      (:connection-type . ssl))
+			    ))
+;;(add-hook 'jabber-post-connect-hooks 'jabber-autoaway-start)
+;; 
+(setq
+  jabber-history-enabled t
+  jabber-use-global-history nil
+  jabber-backlog-number 9999
+  jabber-backlog-days 1095
+ )
+
+;; LaTeX
+(setq TeX-PDF-mode t)
+
+;(require 'flymake)
+
+;(defun flymake-get-tex-args (file-name) (list "pdflatex" 
+;    (list "-file-line-error" "-draftmode" "-interaction=nonstopmode" file-name)))
+;(add-hook 'LaTeX-mode-hook 'flymake-mode)
+
+(autoload 'typing-of-emacs "typing" "The Typing Of Emacs, a game." t)
+(setq zone-programs [zone-pgm-putz-with-case])
+
+(defun lock-screen ()
+  "Lock screen using (zone) and xtrlock
+ calls M-x zone on all frames and runs xtrlock"
+  (interactive)
+  (save-excursion
+    ;(shell-command "xtrlock &")
+    (set-process-sentinel
+     (start-process "xtrlock" nil "xtrlock")
+     '(lambda (process event)
+	(zone-leave-me-alone)))
+    (zone)))
+
+
