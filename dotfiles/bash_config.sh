@@ -36,7 +36,17 @@ function -find-files() {
 }
 
 if [[ "$PS1" ]]; then
-    echo && /usr/games/fortune && echo
+    if [[ -x /usr/games/cowsay ]] && 
+	[[ -d /usr/share/cowsay/cows/ ]] &&
+	[[ -x /usr/games/fortune ]]
+    then
+	cows=(`ls /usr/share/cowsay/cows/`)
+	rand_index=`shuf --head-count=1 --input-range=0-$(( ${#cows[*]} - 1 ))`
+	rand_cow=${cows[$rand_index]}
+	echo && /usr/games/cowsay -f "$rand_cow" `/usr/games/fortune ` && echo
+    elif [[ -x /usr/games/fortune ]]; then
+	/usr/games/fortune
+    fi
 fi
 
 # prompt
