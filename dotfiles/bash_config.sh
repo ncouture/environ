@@ -41,7 +41,8 @@ if [[ "$PS1" ]]; then
 	[[ -x /usr/games/fortune ]]
     then
 	cows=(`ls /usr/share/cowsay/cows/`)
-	rand_index=`shuf --head-count=1 --input-range=0-$(( ${#cows[*]} - 1 ))`
+	rand_index=$[  ( $RANDOM % ${#cows[@]} ) ]
+	#rand_index=`shuf --head-count=1 --input-range=0-$(( ${#cows[*]} - 1 ))`
 	rand_cow=${cows[$rand_index]}
 	echo && /usr/games/cowsay -f "$rand_cow" `/usr/games/fortune ` && echo
     elif [[ -x /usr/games/fortune ]]; then
