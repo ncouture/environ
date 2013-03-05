@@ -65,5 +65,5 @@ shopt -s nocaseglob # case-insensitive pathname expansion
 # env
 export EDITOR=emacs
 export PAGER=less
-export PYTHONSTARTUP='/home/self/.pythonrc.py'
+export PYTHONSTARTUP='/home/nicolasc/.pythonrc.py'
 export PATH=$PATH:~/bin

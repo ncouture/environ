@@ -1,14 +1,11 @@
-;; .emacs
-;; color-theme is a mixt between high-contrast and hober  
-(color-theme-initialize)
-(color-theme-high-contrast)
-(color-theme-hober)
-
-;; https://github.com/gabrielelanaro/emacs-for-python
 (load-file "~/.emacs.d/emacs-for-python/epy-init.el")
 (add-to-list 'load-path "~/.emacs.d/emacs-for-python/")
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 (add-to-list 'load-path "~/dev/rust/src/etc/emacs/")
+
+(color-theme-initialize) 
+(load "color-theme-wombat")
+(color-theme-wombat+)
 
 (require 'whine)
 (whinify)
@@ -19,6 +16,26 @@
 (require 'epy-editing)
 (require 'epy-bindings)
 (require 'rust-mode)
+(require 'flymake) 
+
+;; http://piotrkazmierczak.com/2010/05/13/emacs-as-the-ultimate-latex-editor/
+(defun flymake-get-tex-args (file-name)
+  (list "pdflatex"
+	(list "-file-line-error" "-draftmode" "-interaction=nonstopmode" file-name)))
+(add-hook 'LaTeX-mode-hook 'flymake-mode)
+
+(setq ispell-program-name "aspell")
+(setq ispell-dictionary "english")
+
+(add-hook 'LaTeX-mode-hook 'flyspell-mode)
+(add-hook 'LaTeX-mode-hook 'flyspell-buffer)
+
+(defun turn-on-outline-minor-mode ()
+(outline-minor-mode 1))
+
+(add-hook 'LaTeX-mode-hook 'turn-on-outline-minor-mode)
+(add-hook 'latex-mode-hook 'turn-on-outline-minor-mode)
+(setq outline-minor-mode-prefix "C-cC-")
 
 ;; disable loading of "default.el" at startup
 (setq inhibit-default-init t)
@@ -54,20 +71,34 @@
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 
-;; 3rd party
+;; org-mode
 (add-to-list 'load-path "~/elisp/")
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+(global-set-key (kbd "C-c a") 'org-agenda)
+(setq org-todo-keywords '("TODO" "STARTED" "WAITING" "DONE"))
+(setq org-agenda-include-diary t)
+(setq org-agenda-include-all-todo t)
+
+(setq org-remember-templates
+      '(("Tasks" ?t "* TODO %?\n  %i\n  %a" "~/org/actions.org")
+        ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n  %a" "~/org/actions.org")))
+(setq remember-annotation-functions '(org-remember-annotation))
+(setq remember-handler-functions '(org-remember-handler))
+(eval-after-load 'remember
+  '(add-hook 'remember-mode-hook 'org-remember-apply-template))
+(global-set-key (kbd "C-c r") 'remember)
 
 ;(require 'pycomplete)
 (autoload 'python-mode "python-mode" "Python Mode." t)
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
-(add-to-list 'auto-mode-alist '("\\.psl\\'" . perl-mode))
+(add-to-list 'auto-mode-alist '("\\.psl\\'" . c++-mode))
 (add-to-list 'interpreter-mode-alist '("python" . python-mode))
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(org-agenda-files (quote ("~/org/actions.org")))
  '(org-export-html-expand t)
  '(org-export-html-inline-images t)
  '(org-export-html-link-org-files-as-html t)
@@ -83,7 +114,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
-)
+ )
 
 ;; JABBER
 (setq jabber-account-list '(
@@ -97,6 +128,7 @@
 (setq
   jabber-history-enabled t
   jabber-use-global-history nil
+  jabber-vcard-avatars-retrieve nil
   jabber-backlog-number 9999
   jabber-backlog-days 1095
  )
@@ -125,4 +157,5 @@
 	(zone-leave-me-alone)))
     (zone)))
 
+(setq fill-column 79)
 
