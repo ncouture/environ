@@ -8,7 +8,7 @@ alias ls='ls --color=auto'
 
 # shortcuts
 alias pur='rm -v *~ \#*\# 2> /dev/null'
-alias purge='find . -type f -name "*~" -or -name "\#*\#" -or -name "*.pyc" | xargs rm -v 2> /dev/null'
+alias purge='find . -type f -name "*~" -or -name "\#*\#" -or -name "*.pyc" | xargs -I "{}" rm -v "{}" 2> /dev/null'
 alias initkbd="setxkbmap us; xmodmap ~/.Xmodmap; xrdb -merge ~/.Xresources"
 alias -- -search='apt-cache search'
 alias -- -show='apt-cache show'
@@ -45,7 +45,7 @@ if [[ "$PS1" ]]; then
 	#rand_index=`shuf --head-count=1 --input-range=0-$(( ${#cows[*]} - 1 ))`
 	rand_cow=${cows[$rand_index]}
 	echo && /usr/games/cowsay -f "$rand_cow" `/usr/games/fortune ` && echo
-    elif [[ -x /usr/games/fortune ]]; then
+    elif [[ -x "/usr/games/fortune -o" ]]; then
 	/usr/games/fortune
     fi
 fi
