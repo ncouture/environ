@@ -68,7 +68,3 @@ export PAGER=less
 export PYTHONSTARTUP='/home/nicolasc/.pythonrc.py'
 export PATH=$PATH:~/bin
 
-# debian virtualenvwrapper conf
-if [[ -f /etc/bash_completion.d/virtualenvwrapper ]]; then
-   source /etc/bash_completion.d/virtualenvwrapper
-fi
