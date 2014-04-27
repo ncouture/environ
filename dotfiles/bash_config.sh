@@ -66,15 +66,16 @@ function prepend_to_path {
 
     IFS=":"
     path=($PATH)
+    unset IFS
     for d in "${path[@]}"; do
 	d="$(realpath $d)"
 	if [[ "$d" == "$dir" ]]; then
 	    echo 1>&2 "error: $dir is already in PATH ($PATH)"
 	    return 1
 	fi
-
-	export PATH="$dir:$PATH"
     done
+
+    export PATH="$dir:$PATH"
 }
 
 # I see fortunes in all my shells
@@ -112,3 +113,4 @@ export PYTHONSTARTUP="~/.pythonrc.py"
 
 prepend_to_path "~/bin" 2> /dev/null
 prepend_to_path "~/.local/bin" 2> /dev/null
+prepend_to_path "~/.cask/bin" 
