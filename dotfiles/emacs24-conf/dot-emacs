@@ -1,0 +1,144 @@
+; use the Cask package manager
+(require 'cask "~/.cask/cask.el")
+(cask-initialize)
+
+(load-theme 'wombat t t)
+(enable-theme 'wombat)
+
+;; Prefer backward-kill-word over Backspace
+(global-set-key "\C-w"     'backward-kill-word)
+(global-set-key "\C-x\C-k" 'kill-region)
+(global-set-key "\C-c\C-k" 'kill-region)
+
+;; Lose the UI
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+
+;; org-mode
+(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+(global-set-key (kbd "C-c a") 'org-agenda)
+(setq org-todo-keywords '("TODO" "STARTED" "WAITING" "DONE"))
+(setq org-agenda-include-diary t)
+(setq org-agenda-include-all-todo t)
+
+(setq org-remember-templates
+      '(("Tasks" ?t "* TODO %?\n  %i\n  %a" "~/org/actions.org")
+        ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n  %a" "~/org/actions.org")))
+(setq remember-annotation-functions '(org-remember-annotation))
+(setq remember-handler-functions '(org-remember-handler))
+(eval-after-load 'remember
+  '(add-hook 'remember-mode-hook 'org-remember-apply-template))
+(global-set-key (kbd "C-c r") 'remember)
+(setq org-clock-persist 'history)
+(org-clock-persistence-insinuate)
+
+;; (customize-group)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector ["#242424" "#e5786d" "#95e454" "#cae682" "#8ac6f2" "#333366" "#ccaa8f" "#f6f3e8"])
+ '(current-language-environment "UTF-8")
+ '(custom-enabled-themes (quote (wombat)))
+ '(custom-safe-themes (quote ("3ddfde8b6afe9a72749b73b021ffd5a837f6b9d5c638f7c16d81ec9d346d899f" "89127a6e23df1b1120aa61bd7984f1d5f2747cad1e700614a68bdb7df77189ba" "549c1c977a8eea73021ca2fcc54169d0b2349aaee92d85b6f35e442399cbb61b" "fc89666d6de5e1d75e6fe4210bd20be560a68982da7f352bd19c1033fb7583ba" default)))
+ '(flycheck-highlighting-mode (quote lines))
+ '(org-agenda-files (quote ("~/org/actions.org")))
+ '(org-export-html-expand t)
+ '(org-export-html-inline-images t)
+ '(org-export-html-link-org-files-as-html t)
+ '(org-export-html-style "")
+ '(org-export-html-toplevel-hlevel 2)
+ '(org-export-html-with-timestamp nil)
+ '(org-export-with-timestamps nil)
+ '(org-link-mailto-program (quote (browse-url)))
+ '(org-show-siblings (quote ((link-search . t) (tags-tree . t) (default . t))))
+ '(scroll-bar-mode nil)
+ '(show-paren-mode t)
+ '(size-indication-mode t)
+ '(tool-bar-mode nil))
+
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(flycheck-error-face ((t (:inherit error :background "gray27" :foreground "IndianRed1" :underline (:color "red" :style wave)))) t)
+ '(flycheck-warning-face ((t (:inherit warning :foreground "yellow1"))) t))
+
+
+;; desktop mode (save buffers on exit)
+(require 'desktop)
+(desktop-save-mode 1)
+(defun my-desktop-save ()
+  (interactive)
+  ;; Don't call desktop-save-in-desktop-dir, as it prints a message.
+  (if (eq (desktop-owner) (emacs-pid))
+      (desktop-save desktop-dirname)))
+(add-hook 'auto-save-hook 'my-desktop-save)
+
+
+;;http://emacswiki.org/emacs/InteractivelyDoThings 
+(require 'ido)
+(ido-mode t)
+
+;; http://www.emacswiki.org/emacs/AnsiColor
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+
+;;set ipython as default python shell
+(setq
+ python-shell-interpreter "ipython"
+ python-shell-interpreter-args ""
+ python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+ python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
+ python-shell-completion-setup-code
+   "from IPython.core.completerlib import module_completion"
+ python-shell-completion-module-string-code
+   "';'.join(module_completion('''%s'''))\n"
+ python-shell-completion-string-code
+   "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
+
+;;add colors to shell
+(setq ansi-term-color-vector [unspecified "#3f3f3f" "#cc9393" "#7f9f7f" "#f0dfaf" "#DD6600" "#dc8cc3" "#93e0e3" "#dcdccc"])
+
+;;package archive
+(require 'package)
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("marmalade" . "http://marmalade-repo.org/packages/")
+                         ("melpa" . "http://melpa.milkbox.net/packages/")
+			 ("org" . "http://orgmode.org/elpa/")))
+(package-initialize)
+
+;; el-get - https://github.com/dimitri/el-get
+(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
+(unless (require 'el-get nil 'noerror)
+  (with-current-buffer
+      (url-retrieve-synchronously
+       "https://raw.github.com/dimitri/el-get/master/el-get-install.el")
+    (let (el-get-master-branch)
+      (goto-char (point-max))
+      (eval-print-last-sexp))))
+(el-get 'sync)
+
+;; jedi-mode
+(add-hook 'python-mode-hook 'jedi:setup)
+(add-hook 'python-mode-hook 'auto-complete-mode)
+(setq jedi:complete-on-dot t)
+(setq jedi:jedi:install-imenu t)
+
+;;enable flycheck
+(add-hook 'after-init-hook #'global-flycheck-mode)
+
+;;(require 'autopair)
+(autopair-global-mode) ;; to enable in all buffers
+
+;; twittering-mode
+(setq twittering-use-master-password t)
+
+;; online paste service - http://ix.io - (M-x ix)
+;;(setq ix-user "yourusername")
+;;(setq ix-token "yourpassword")
