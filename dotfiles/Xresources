@@ -8,8 +8,8 @@ x-terminal-emulator*VT100*Translations: #override \n\
 ! mkfontscale
 ! mkfontdir
 ! fc-cache -fv
-x-terminal-emulator*faceName: Envy Code R
-x-terminal-emulator*faceSize: 14
+x-terminal-emulator*faceName: Insoncolata
+x-terminal-emulator*faceSize: 18
 x-terminal-emulator*title: x-terminal-emulator
 
 x-terminal-emulator*activeIcon: false
@@ -51,4 +51,4 @@ x-terminal-emulator*internalBorder: 0
 x-terminal-emulator*transparent: true
 x-terminal-emulator*charClass:  33:48,37:48,43:48,45-47:48,64:48,126:48,95:48
 
-Emacs.font: Envy Code R-14
+Emacs.font: Inconsolata-20
