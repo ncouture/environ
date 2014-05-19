@@ -1,4 +1,9 @@
-; use the Cask package manager
+;;; dotemacs --- summary
+;;; Commentary:
+;;; Code:  
+
+;;(server-start)
+
 (require 'cask "~/.cask/cask.el")
 (cask-initialize)
 
@@ -16,70 +21,67 @@
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 
 ;; org-mode
-(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+(require 'org-habit)
+(require 'org-bullets)
+
+(setq org-directory "~/org")
+;; MobileOrg
+(setq org-mobile-directory "~/mobileorg")
+(setq org-mobile-inbox-for-pull "~/org/from-mobile.org")
+;; Capture
+(setq org-default-notes-file (concat org-directory "/org/notes.org"))
+(define-key global-map "\C-cc" 'org-capture)
+;; Layout: indented (setq org-startup-indented t)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-
-(global-set-key (kbd "C-c a") 'org-agenda)
-(setq org-todo-keywords '("TODO" "STARTED" "WAITING" "DONE"))
-(setq org-agenda-include-diary t)
-(setq org-agenda-include-all-todo t)
-
-(setq org-remember-templates
-      '(("Tasks" ?t "* TODO %?\n  %i\n  %a" "~/org/actions.org")
-        ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n  %a" "~/org/actions.org")))
-(setq remember-annotation-functions '(org-remember-annotation))
-(setq remember-handler-functions '(org-remember-handler))
-(eval-after-load 'remember
-  '(add-hook 'remember-mode-hook 'org-remember-apply-template))
-(global-set-key (kbd "C-c r") 'remember)
+;; Clocking work time
+;(setq org-log-done 'time) ;; not needed with org-todo-keywords sequence
+(setq org-clock-idle-time "10")  ;; http://orgmode.org/manual/Resolving-idle-time.html
+(setq org-clock-continuously t)  ;; http://orgmode.org/manual/Resolving-idle-time.html
 (setq org-clock-persist 'history)
 (org-clock-persistence-insinuate)
 
-;; (customize-group)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector ["#242424" "#e5786d" "#95e454" "#cae682" "#8ac6f2" "#333366" "#ccaa8f" "#f6f3e8"])
- '(current-language-environment "UTF-8")
- '(custom-enabled-themes (quote (wombat)))
- '(custom-safe-themes (quote ("3ddfde8b6afe9a72749b73b021ffd5a837f6b9d5c638f7c16d81ec9d346d899f" "89127a6e23df1b1120aa61bd7984f1d5f2747cad1e700614a68bdb7df77189ba" "549c1c977a8eea73021ca2fcc54169d0b2349aaee92d85b6f35e442399cbb61b" "fc89666d6de5e1d75e6fe4210bd20be560a68982da7f352bd19c1033fb7583ba" default)))
- '(flycheck-highlighting-mode (quote lines))
- '(org-agenda-files (quote ("~/org/actions.org")))
- '(org-export-html-expand t)
- '(org-export-html-inline-images t)
- '(org-export-html-link-org-files-as-html t)
- '(org-export-html-style "")
- '(org-export-html-toplevel-hlevel 2)
- '(org-export-html-with-timestamp nil)
- '(org-export-with-timestamps nil)
- '(org-link-mailto-program (quote (browse-url)))
- '(org-show-siblings (quote ((link-search . t) (tags-tree . t) (default . t))))
- '(scroll-bar-mode nil)
- '(show-paren-mode t)
- '(size-indication-mode t)
- '(tool-bar-mode nil))
+(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 
+(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c v") 'org-show-todo-tree)
 
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(flycheck-error-face ((t (:inherit error :background "gray27" :foreground "IndianRed1" :underline (:color "red" :style wave)))) t)
- '(flycheck-warning-face ((t (:inherit warning :foreground "yellow1"))) t))
+;; ! (for a timestamp)
+;; @ (for a note with timestamp)
+(setq org-todo-keywords
+      '((sequence "TODO(t)"
+		  "DEFERRED(d!)"
+		  "DELEGATED(D@)"
+		  "STARTED(s!)"
+		  "WAITING(w@/!)"
+		  "DONE(o!)"
+		  "CANCELLED(c@)")))
+(setq org-agenda-files (quote ("~/org/actions.org")))
+(setq org-agenda-include-diary t)
+(setq org-agenda-include-all-todo t)
 
+(setq org-capture-templates
+      '(
+	("q" "Question" 
+	 entry (file+headline "~/org/notes.org" "Questions")
+	 "* TODO %?\n  %i\n  %a")
+	("t" "Todo" 
+	 entry (file+headline "~/org/notes.org" "Tasks")
+	 "* TODO %?\n  %i\n  %a")
+        ("j" "Journal" entry (file+datetree "~/org/journal.org")
+	 "* %?\nEntered on %U\n  %i\n  %a")
+	)
+      )
 
-;; desktop mode (save buffers on exit)
-(require 'desktop)
-(desktop-save-mode 1)
-(defun my-desktop-save ()
-  (interactive)
+;;desktop mode (save buffers on exit)
+;;autosave buffers
+;(require 'desktop)
+;(desktop-save-mode 1)
+;(defun my-desktop-save ()
+;  (interactive)
   ;; Don't call desktop-save-in-desktop-dir, as it prints a message.
-  (if (eq (desktop-owner) (emacs-pid))
-      (desktop-save desktop-dirname)))
-(add-hook 'auto-save-hook 'my-desktop-save)
+;  (if (eq (desktop-owner) (emacs-pid))
+;      (desktop-save desktop-dirname)))
+;(add-hook 'auto-save-hook 'my-desktop-save)
 
 
 ;;http://emacswiki.org/emacs/InteractivelyDoThings 
@@ -113,7 +115,8 @@
 			 ("org" . "http://orgmode.org/elpa/")))
 (package-initialize)
 
-;; el-get - https://github.com/dimitri/el-get
+;;el-get
+;;https://github.com/dimitri/el-get
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 (unless (require 'el-get nil 'noerror)
   (with-current-buffer
@@ -130,6 +133,13 @@
 (setq jedi:complete-on-dot t)
 (setq jedi:jedi:install-imenu t)
 
+;; elpy setup --- using python.el for now
+;;(package-initialize)
+;;(elpy-enable)
+;;(elpy-use-ipython)
+;;(elpy-clean-modeline)
+;;(setq elpy-rpc-backend "jedi")
+
 ;;enable flycheck
 (add-hook 'after-init-hook #'global-flycheck-mode)
 
@@ -138,7 +148,5 @@
 
 ;; twittering-mode
 (setq twittering-use-master-password t)
-
-;; online paste service - http://ix.io - (M-x ix)
-;;(setq ix-user "yourusername")
-;;(setq ix-token "yourpassword")
+(setq ix-user "username")
+(setq ix-token "password")
