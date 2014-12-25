@@ -3,9 +3,8 @@
 (source melpa)
 (source marmalade)
 
-;; CUSTOM
 (depends-on "auto-complete")
-(depends-on "autopair") ;; TODO: compare with https://github.com/Fuco1/smartparens
+(depends-on "autopair")
 (depends-on "cl-lib")
 (depends-on "ctable")
 (depends-on "dash")
@@ -30,11 +29,12 @@
 (depends-on "s")
 (depends-on "twittering-mode")
 (depends-on "yasnippet")
-(depends-on "color-theme")
-(depends-on "color-theme-wombat")
-(depends-on "color-theme-wombat+")
 (depends-on "litable")
 (depends-on "magit")
 (depends-on "org")
-(depends-on "org-bullets")
 (depends-on "ix")
+
+;(depends-on "org-reveal")
+;(depends-on "color-theme")
+;(depends-on "color-theme-solarized")
+;(depends-on "org-bullets")

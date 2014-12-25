@@ -8,6 +8,7 @@ alias ls='ls --color=auto'
 
 # shortcuts
 alias pur='rm -v *~ \#*\# 2> /dev/null'
+alias purge='find . -type f -name "*~" -or -name "\#*\#" -or -name "*.pyc" | xargs -I "{}" rm -v "{}" 2> /dev/null'
 alias initkbd="setxkbmap us; xmodmap ~/.Xmodmap; xrdb -merge ~/.Xresources"
 alias -- -search='apt-cache search'
 alias -- -show='apt-cache show'
@@ -23,62 +24,18 @@ alias -- -upgrade='apt-get upgrade'
 alias -- -up='apt-get update && apt-get upgrade'
 alias -- -remove='apt-get remove'
 alias -- -source='apt-get source'
-alias -- -list="dpkg -l"
-alias -- -files="dpkg -L"
-
-function purge {
-    rm -v /tmp/purge-*.log 2> /dev/null
-
-    rand_num="$RANDOM"
-    error_log="/tmp/purge-$rand_num.log"
-    find . -type f -name "*~" -or -name "\#*\#" \
-	                      -or -name "*.pyc" \
-	                      -or -name "*.elc" 2>> "$error_log" | xargs -I "{}" rm -v "{}" 2>> "$error_log"
-    echo "see \`$error_log' for errors."
-}
+alias -- -list-packages='dpkg -l'
+alias -- -list-files='dpkg -L'
+alias -- -find-file='apt-file search'
 
 function -find-files {
     [[ $# -eq 1 ]] && { 
 	apt-file search "$1" | grep --color=auto "/$1\$"
     } || { 
-	echo 'Usage: -find-file <filename>'
+	echo 'Usage: -find-files <filename>'
     }
 }
 
-function realpath {
-    # prints an absolute path 
-    echo "$(eval echo $@)"
-}
-
-function prepend_to_path {
-    # prepends a directory to PATH if it exists
-    # and is not already included in PATH
-    if [[ "$#" -ne 1 ]]; then
-	echo "Usage: prepend_to_path <path>"
-	return 1
-    fi
-
-    dir="$(realpath $1)"
-    if [[ ! -d "$dir" ]]; then
-	echo 1>&2 "error: $dir is not a directory"
-	return 1
-    fi
-
-    IFS=":"
-    path=($PATH)
-    unset IFS
-    for d in "${path[@]}"; do
-	d="$(realpath $d)"
-	if [[ "$d" == "$dir" ]]; then
-	    echo 1>&2 "error: $dir is already in PATH ($PATH)"
-	    return 1
-	fi
-    done
-
-    export PATH="$dir:$PATH"
-}
-
-# I see fortunes in all my shells
 if [[ "$PS1" ]]; then
     if [[ -x /usr/games/cowsay ]] && 
 	[[ -d /usr/share/cowsay/cows/ ]] &&
@@ -109,8 +66,12 @@ shopt -s nocaseglob # case-insensitive pathname expansion
 # env
 export EDITOR=emacs
 export PAGER=less
-export PYTHONSTARTUP="~/.pythonrc.py"
+export PYTHONSTARTUP=~/.pythonrc.py
+export PATH=~/bin:~/.cask/bin:~/.local/bin/:$PATH
 
-prepend_to_path "~/bin" 2> /dev/null
-prepend_to_path "~/.local/bin" 2> /dev/null
-prepend_to_path "~/.cask/bin" 
+# virtualenv
+export WORKON_HOME=~/virtualenvs
+export VIRTUALENV_PYTHON=/usr/bin/python3
+export PROJECT_HOME=~/dev  # for mkproject
+
+initkbd &> /dev/null

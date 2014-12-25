@@ -1,28 +1,33 @@
-;;; dotemacs --- summary
+;;; .emacs --- summary
 ;;; Commentary:
-;;; Code:  
-
-;;(server-start)
+;;; Code:
 
 (require 'cask "~/.cask/cask.el")
 (cask-initialize)
-
-(load-theme 'wombat t t)
-(enable-theme 'wombat)
 
 ;; Prefer backward-kill-word over Backspace
 (global-set-key "\C-w"     'backward-kill-word)
 (global-set-key "\C-x\C-k" 'kill-region)
 (global-set-key "\C-c\C-k" 'kill-region)
+(global-set-key "\C-cg" 'magit-status)
 
 ;; Lose the UI
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 
+;;
 ;; org-mode
-(require 'org-habit)
-(require 'org-bullets)
+;;
+
+(add-to-list 'load-path "~/.emacs.d/el-get/org-mode/lisp")
+(require 'ox-reveal)
+(setq org-alphabetical-lists t)
+
+;; Explicitly load required exporters
+(require 'ox-html)
+(require 'ox-latex)
+(require 'ox-ascii)
 
 (setq org-directory "~/org")
 ;; MobileOrg
@@ -35,12 +40,10 @@
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 ;; Clocking work time
 ;(setq org-log-done 'time) ;; not needed with org-todo-keywords sequence
-(setq org-clock-idle-time "10")  ;; http://orgmode.org/manual/Resolving-idle-time.html
-(setq org-clock-continuously t)  ;; http://orgmode.org/manual/Resolving-idle-time.html
+;(setq org-clock-idle-time "10")  ;; http://orgmode.org/manual/Resolving-idle-time.html
+;(setq org-clock-continuously t)  ;; http://orgmode.org/manual/Resolving-idle-time.html
 (setq org-clock-persist 'history)
 (org-clock-persistence-insinuate)
-
-(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 
 (global-set-key (kbd "C-c a") 'org-agenda)
 (global-set-key (kbd "C-c v") 'org-show-todo-tree)
@@ -72,17 +75,43 @@
 	)
       )
 
-;;desktop mode (save buffers on exit)
-;;autosave buffers
-;(require 'desktop)
-;(desktop-save-mode 1)
-;(defun my-desktop-save ()
-;  (interactive)
-  ;; Don't call desktop-save-in-desktop-dir, as it prints a message.
-;  (if (eq (desktop-owner) (emacs-pid))
-;      (desktop-save desktop-dirname)))
-;(add-hook 'auto-save-hook 'my-desktop-save)
+;;
+;; http://doc.norang.ca/org-mode.html#OrgBabel (ditaa/graphviz/plantuml)
+;;
+(setq org-ditaa-jar-path "/usr/share/ditaa/ditaa.jar")
+(setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
+; Make babel results blocks lowercase
+(setq org-babel-results-keyword "results")
 
+(defun bh/display-inline-images ()
+   (condition-case nil
+      (org-display-inline-images)
+    (error nil)))
+
+(org-babel-do-load-languages
+ (quote org-babel-load-languages)
+ (quote ((emacs-lisp . t)
+         (dot . t)
+         (ditaa . t)
+         (R . t)
+         (ruby . t)
+	 (python . t)
+         (gnuplot . t)
+         (clojure . t)
+         (sh . t)
+         (ledger . t)
+         (org . t)
+         (plantuml . t)
+	 (latex . t))))
+
+; Do not prompt to confirm evaluation
+; This may be dangerous - make sure you understand the consequences
+; of setting this -- see the docstring for details
+(setq org-confirm-babel-evaluate nil)
+
+; Use fundamental mode when editing plantuml blocks with C-c '
+(add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
+(add-hook 'org-babel-after-execute-hook 'bh/display-inline-images 'append)
 
 ;;http://emacswiki.org/emacs/InteractivelyDoThings 
 (require 'ido)
@@ -90,22 +119,6 @@
 
 ;; http://www.emacswiki.org/emacs/AnsiColor
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-
-;;set ipython as default python shell
-(setq
- python-shell-interpreter "ipython"
- python-shell-interpreter-args ""
- python-shell-prompt-regexp "In \\[[0-9]+\\]: "
- python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
- python-shell-completion-setup-code
-   "from IPython.core.completerlib import module_completion"
- python-shell-completion-module-string-code
-   "';'.join(module_completion('''%s'''))\n"
- python-shell-completion-string-code
-   "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
-
-;;add colors to shell
-(setq ansi-term-color-vector [unspecified "#3f3f3f" "#cc9393" "#7f9f7f" "#f0dfaf" "#DD6600" "#dc8cc3" "#93e0e3" "#dcdccc"])
 
 ;;package archive
 (require 'package)
@@ -126,6 +139,10 @@
       (goto-char (point-max))
       (eval-print-last-sexp))))
 (el-get 'sync)
+
+;; color-theme-solarized-dark
+(load-theme 'solarized-dark t t)
+(enable-theme 'solarized-dark)
 
 ;; jedi-mode
 (add-hook 'python-mode-hook 'jedi:setup)
@@ -148,5 +165,13 @@
 
 ;; twittering-mode
 (setq twittering-use-master-password t)
+
+(setq browse-url-browser-function 'browse-url-generic
+      browse-url-generic-program "/usr/bin/conkeror")
+
+;; ix.io
 (setq ix-user "username")
 (setq ix-token "password")
+
+(provide '.emacs)
+;;; .emacs ends here
