@@ -1,6 +1,6 @@
-x-terminal-emulator*VT100*Translations: #override \n\
-  BackSpace:     string(0x7f) \n\
-  Delete:        string(0x1b) string("[3~")
+!x-terminal-emulator*VT100*Translations: #override \n\
+!  BackSpace:     string(0x7f) \n\
+!  Delete:        string(0x1b) string("[3~")
 ! mkdir /usr/share/fonts/truetype/envy
 ! cd /usr/share/fonts/truetype/envy
 ! wget http://download.damieng.com/fonts/original/EnvyCodeR-PR7.zip -O envy.zip
@@ -8,7 +8,7 @@ x-terminal-emulator*VT100*Translations: #override \n\
 ! mkfontscale
 ! mkfontdir
 ! fc-cache -fv
-x-terminal-emulator*faceName: Insoncolata
+x-terminal-emulator*faceName: Courier
 x-terminal-emulator*faceSize: 18
 x-terminal-emulator*title: x-terminal-emulator
 
@@ -45,10 +45,10 @@ x-terminal-emulator*rightScrollBar: true
 x-terminal-emulator*cutToBeginningOfLine: false
 x-terminal-emulator*loginShell: true
 x-terminal-emulator*cursesemul: false
-x-terminal-emulator*backarrowKeyIsErase: false
+x-terminal-emulator*backarrowKeyIsErase: true
 x-terminal-emulator*ptyInitialErase: false
 x-terminal-emulator*internalBorder: 0
 x-terminal-emulator*transparent: true
 x-terminal-emulator*charClass:  33:48,37:48,43:48,45-47:48,64:48,126:48,95:48
 
-Emacs.font: Inconsolata-20
+Emacs.font: Courier-18
