@@ -3,6 +3,12 @@
 (source melpa)
 (source marmalade)
 
+
+;(depends-on "org-reveal")
+;(depends-on "color-theme")
+;(depends-on "color-theme-solarized")
+;(depends-on "org-bullets")
+
 (depends-on "auto-complete")
 (depends-on "autopair")
 (depends-on "cl-lib")
@@ -33,8 +39,5 @@
 (depends-on "magit")
 (depends-on "org")
 (depends-on "ix")
-
-;(depends-on "org-reveal")
-;(depends-on "color-theme")
-;(depends-on "color-theme-solarized")
-;(depends-on "org-bullets")
+(depends-on "smex")
+(depends-on "ox-reveal")
