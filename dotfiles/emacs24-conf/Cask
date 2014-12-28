@@ -41,3 +41,4 @@
 (depends-on "ix")
 (depends-on "smex")
 (depends-on "ox-reveal")
+(depends-on "znc")
