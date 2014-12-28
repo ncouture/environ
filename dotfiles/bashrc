@@ -35,6 +35,21 @@ function -find-file() {
     }
 }
 
+function wordfrequency() {
+    # http://tomayko.com/writings/awkward-ruby
+    awk '
+        BEGIN { FS="[^a-zA-Z]+" } {
+            for (i=1; i<=NF; i++) {
+                word = tolower($i)
+                words[word]++
+            }
+        }
+        END {
+            for (w in words)
+                printf("%3d %s\n", words[w], w)
+        }' | sort -n
+}
+
 if [[ "$PS1" ]]; then
     if [[ -x /usr/games/cowsay ]] && 
 	[[ -d /usr/share/cowsay/cows/ ]] &&
