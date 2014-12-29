@@ -6,7 +6,7 @@ curl -fsSkL https://raw.github.com/cask/cask/master/go | python
 export PATH="~/.cask/bin:$PATH"
 mkdir ~/.emacs.d
 ln -sf "$(pwd)/Cask" ~/.emacs.d/
-ln -sf "$(pwd)/dot-emacs" ~/.emacs
+ln -sf "$(pwd)/.emacs" ~/.emacs
 ln -sf "$(pwd)/lisp" ~/.emacs.d/
 cd ~/.emacs.d
 cask install

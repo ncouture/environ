@@ -10,7 +10,7 @@
 ;;
 (if (boundp 'org-mode-user-lisp-path)
     (add-to-list 'load-path org-mode-user-lisp-path)
-  (add-to-list 'load-path (expand-file-name "~/git/org-mode")))
+  (add-to-list 'load-path (expand-file-name "~/.emacs.d/elisp/org-mode")))
 
 (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
 (require 'org)
@@ -1530,7 +1530,7 @@ Late deadlines first, then scheduled, then non-late deadlines"
 ;;
 (if (boundp 'org-mode-user-contrib-lisp-path)
     (add-to-list 'load-path org-mode-user-contrib-lisp-path)
-  (add-to-list 'load-path (expand-file-name "~/git/org-mode/contrib/lisp")))
+  (add-to-list 'load-path (expand-file-name "~/.emacs.d/elisp/org-mode/contrib/lisp")))
 
 (require 'org-checklist)
 
