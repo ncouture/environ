@@ -10,5 +10,7 @@ ln -sf "$(pwd)/dot-emacs" ~/.emacs
 ln -sf "$(pwd)/lisp" ~/.emacs.d/
 cd ~/.emacs.d
 cask install
+cd elisp
+git clone git://orgmode.org/org-mode.git
 emacs
 ```

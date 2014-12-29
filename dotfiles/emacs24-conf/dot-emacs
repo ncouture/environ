@@ -50,6 +50,8 @@
 ;;
 ;; org-mode
 ;;
+(add-to-list 'load-path "~/.emacs.d/elisp/org-mode/lisp")
+(require 'org)
 
 ;; MobileOrg
 (defvar org-mobile-directory "~/mobileorg")
@@ -216,6 +218,8 @@
       smtpmail-smtp-server "gmail"
       smtpmail-smtp-service 587
       gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
+
+(setq erc-server-auto-reconnect nil)
 
 (provide '.emacs)
 ;;; .emacs ends here
