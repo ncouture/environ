@@ -31,10 +31,10 @@
 (depends-on "yasnippet")
 (depends-on "litable")
 (depends-on "magit")
-; using org-mode trunk
-;(depends-on "org")
+(depends-on "org")
 (depends-on "ix")
 (depends-on "smex")
 (depends-on "ox-reveal")
 (depends-on "znc")
 (depends-on "multiple-cursors")
+(depends-on "jabber")
