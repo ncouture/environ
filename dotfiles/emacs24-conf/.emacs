@@ -3,6 +3,12 @@
 ;;; Code:
 
 
+;; something from emacsrocks author
+(global-set-key (kbd "M-j")
+            (lambda ()
+                  (interactive)
+                  (join-line -1)))
+
 ;; impose gnutls-cli when supported -- this requires an initial
 ;; manual execution of gnutls-cli --strict-tofu -p <port> <host>
 ;; to store a host's SSL certificate before it can be accepted
@@ -64,6 +70,11 @@
 ;; anything after that takes over
 (require 'ox-reveal)
 
+(defun play-sound-on-task-state-change ()
+  "Plays a sound when task changes to state DONE."
+  (when (string-equal org-state "DONE")
+    (play-sound-file "~/.emacs.d/audio/DONE.wav")))
+(add-hook 'org-after-todo-state-change-hook 'play-sound-on-task-state-change)
 
 ;; Capture
 ;(setq org-default-notes-file (concat org-directory "/org/notes.org"))
@@ -215,11 +226,18 @@
       smtpmail-auth-credentials '(("smtp.gmail.com" 587
 				   "nicolas.couture@gmail.com" nil))
       smtpmail-default-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-server "gmail"
+      smtpmail-smtp-server "smtp.gmail.com"
       smtpmail-smtp-service 587
       gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
 
 (setq erc-server-auto-reconnect nil)
+(setq erc-hide-list '("JOIN" "PART" "QUIT"))
+;(add-hook erc-mode-hook
+;	  '(define-key erc-mode-map
+;	     (kbd "C-c C-x") nil))
+(global-set-key (kbd "<M-up>") 'erc-next-command)
+
+(setq message-user-organization "Church of Emacs")
 
 (provide '.emacs)
 ;;; .emacs ends here

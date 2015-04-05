@@ -35,7 +35,7 @@
 ;; Custom Key Bindings
 (global-set-key (kbd "<f12>") 'org-agenda)
 (global-set-key (kbd "C-c C-t") 'bh/org-todo)
-(global-set-key (kbd "C-c t") 'bh/widen)
+(global-set-key (kbd "C-c w") 'bh/widen)
 (global-set-key (kbd "<f7>") 'bh/set-truncate-lines)
 (global-set-key (kbd "<f8>") 'org-cycle-agenda-files)
 (global-set-key (kbd "C-c sa") 'bh/show-org-agenda)
@@ -1195,7 +1195,7 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
     (bh/narrow-to-org-subtree)
     (org-show-todo-tree nil)))
 
-(global-set-key (kbd "<S-f5>") 'bh/widen)
+(global-set-key (kbd "W") 'bh/widen)
 
 (defun bh/widen ()
   (interactive)
