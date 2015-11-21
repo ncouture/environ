@@ -87,5 +87,27 @@ export PATH=~/bin:~/.cask/bin:~/.local/bin/:"$PATH"
 export WORKON_HOME=~/virtualenvs
 export VIRTUALENV_PYTHON=/usr/bin/python3
 export PROJECT_HOME=~/dev  # for mkproject
+export GNUPGHOME="$HOME"/.gnupg
 
-initkbd &> /dev/null
+if [ -f "${HOME}/.gnupg/gpg-agent.env" ]; then
+    source "${HOME}/.gnupg/gpg-agent.env"
+    export GPG_AGENT_INFO
+    export SSH_AUTH_SOCK
+fi
+
+# set up SSH agent socket symlink
+export SSH_AUTH_SOCK_LINK="/tmp/ssh-$USER/agent"
+if ! [ -r $(readlink -m $SSH_AUTH_SOCK_LINK) ] && [ -r $SSH_AUTH_SOCK ]; then
+	mkdir -p "$(dirname $SSH_AUTH_SOCK_LINK)" &&
+	chmod go= "$(dirname $SSH_AUTH_SOCK_LINK)" &&
+	ln -sfn $SSH_AUTH_SOCK $SSH_AUTH_SOCK_LINK
+fi
+
+# only run initkb if caps lock is still active
+modmap="$(xmodmap -pm | grep ^lock)"
+modmap=${modmap##+([[:space:]])}; modmap=${modmap%%+([[:space:]])}
+if [[ "$modmap" != "lock" ]]; then
+    echo "initkbd"
+    initkbd &> /dev/null
+fi
+
