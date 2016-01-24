@@ -1,0 +1,4 @@
+#!/bin/bash
+#
+
+parallel -j10 opensemanticsearch-index-web ::: $(find /srv/ -name "local-links.total" -type f ! -size 0 -exec cat "{}" \;)

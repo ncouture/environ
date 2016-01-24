@@ -1,0 +1,186 @@
+#!/usr/bin/python3
+#
+# crawl all pages of an onion site (excluding any exclude pattern)
+# and extract all local and external onion links (excluding any in exclude pattern)
+# 
+
+import sys
+import os
+import re
+import time
+import http
+import urllib
+import lxml.html
+
+from urllib.request import urlopen
+from urllib.parse import urlparse, urljoin, urlsplit
+
+
+def inpath(main_host, filename, subdir=''):
+    hostdir = os.path.join(os.path.sep, 'srv', 'tor', main_host, subdir)
+    if not os.path.isdir(hostdir):
+        os.makedirs(hostdir)
+    return os.path.join(hostdir, filename)
+
+
+def get_onion_links(url,
+                    main_url,
+                    local_exclude=None,
+                    external_exclude=None):
+    print("\n\nURL: {}\n".format(url))
+    links = []
+    main_host = urlparse(main_url).hostname
+    try:
+        html = urlopen(url).read()
+        cachefile = str(inpath(main_host, filename=url.replace('/', '\\'), subdir='html'))
+        open(cachefile, 'wb').write(html)
+        doc = lxml.html.document_fromstring(html)
+        for atag in doc.xpath("//a"):
+            href = atag.get('href')
+            if href:
+                links.append(href)
+    except (IOError,
+            http.client.BadStatusLine,
+            lxml.etree.XMLSyntaxError) as e:
+        print("\n\nEXCEPTION: {}\n".format(url))
+        pass
+
+    #try:
+    #except lxml.etree.XMLSyntaxError:
+    #    pass
+
+
+    return resolved_links_with_type(links,
+                                    main_url,
+                                    local_exclude=local_exclude,
+                                    external_exclude=external_exclude)
+
+
+def resolved_links_with_type(links,
+                             main_url,
+                             min_wait=0,
+                             local_exclude=None,
+                             external_exclude=None):
+    """Resolve relative URLs to absolute URLs
+       and filter them by type (local, external).
+    """
+    min_wait = float(min_wait)
+    local_onions = set()
+    external_onions = set()
+
+    main_host = urlparse(main_url).hostname
+    for link in links:
+        time.sleep(min_wait)
+        link = urljoin(main_url, link)
+
+        try:
+            tld = urlsplit(link).netloc.split('.')[-1]
+        except IndexError:
+            continue
+
+        hostname = urlparse(link).hostname
+        if tld != 'onion':
+            continue
+
+        if hostname == main_host:
+            local_onions.add(link)
+        else:
+            external_onions.add(link)
+
+    if local_exclude:
+        regex = re.compile(local_exclude)
+        local_onions = set(filter(lambda i: not regex.search(i),
+                                  local_onions))
+    if external_exclude:
+        regex = re.compile(external_exclude)
+        external_onions = set(filter(lambda i: not regex.search(i),
+                                     external_onions))
+    return {'local': local_onions,
+            'external': external_onions}
+
+
+def crawl_url_for_onions(url,
+                         local_exclude=None,
+                         external_exclude=None):
+    """Crawl all local pages of site `url' and reports 
+       local and external links.
+    """
+    links = get_onion_links(main_url,
+                            main_url=main_url,
+                            local_exclude=local_exclude,
+                            external_exclude=external_exclude)
+    main_host = urlparse(main_url).hostname
+    local_onions = links['local']
+    external_onions = links['external']
+    visited_onions = set()
+    visited_cache = inpath(main_host, 'visited.cache')
+    local_cache = inpath(main_host, '_local-links.tmp')
+    external_cache = inpath(main_host, '_external-links.tmp')
+
+    def cached_onion_link_set(filename):
+        return set([line.strip() for line in
+                    open(filename, 'r').readlines()])
+
+    if os.path.isfile(visited_cache):
+        visited_onions = cached_onion_link_set(visited_cache)
+        print("[+] Found visited crawler cache")
+        print(" `--> skipping {} crawled .onions".format(len(visited_onions)))
+
+    if os.path.isfile(local_cache):
+        local_onions = cached_onion_link_set(local_cache)
+        print("[+] Found {} local links in cache".format(len(local_onions)))
+
+    if os.path.isfile(external_cache):
+        external_onions = cached_onion_link_set(external_cache)
+        print("[+] Found {} external links in cache".format(len(external_onions)))
+    
+
+    while len(local_onions) != 0:
+        sys.stderr.write("visited = {}\n".format(len(visited_onions)))
+        sys.stderr.write("local_onions = {}\n".format(len(local_onions)))
+        sys.stderr.write("external_onions = {}\n".format(len(external_onions)))
+        page = local_onions.pop()
+        sys.stderr.write("\n\n---> page = {}\n".format(page))
+        if page in visited_onions:
+            continue
+
+        links = get_onion_links(page,
+                                main_url=main_url,
+                                local_exclude=local_exclude,
+                                external_exclude=external_exclude)
+
+        local_onions.update(links['local'])
+        external_onions.update(links['external'])
+
+        open(inpath(main_host, '_local-links.tmp'), 'w').write("\n".join(local_onions))
+        open(inpath(main_host, '_external-links.tmp'), 'w').write("\n".join(external_onions))
+        open(inpath(main_host, 'visited.cache'), 'w').write("\n".join(visited_onions))
+
+        visited_onions.add(page)
+        
+
+    return {'external': external_onions,
+            'visited': visited_onions}
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: {} <url>".format(
+            os.path.basename(sys.argv[0])))
+        sys.exit(1)
+
+    main_url = sys.argv[1]
+    onions = crawl_url_for_onions(main_url,
+                                  local_exclude="#|\?|&|://(.*):(.*)")
+    main_host = urlparse(main_url).hostname
+    local_urls = "\n".join(onions['visited'])
+    external_urls = "\n".join(onions['external'])
+
+    open(inpath(main_host, 'local-links.total'), 'w').write(local_urls)
+    open(inpath(main_host, 'external-links.total'), 'w').write(external_urls)
+    try:
+        pass
+        #os.unlink(inpath(main_host, '_local-links.tmp'))
+        #os.unlink(inpath(main_host, '_external-links.tmp'))
+    except FileNotFoundError:
+        pass

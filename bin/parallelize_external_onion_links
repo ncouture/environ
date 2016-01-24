@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+
+parallel -j30 get_onion_links ::: $(
+    parallel -j10 cat ::: $(
+	find /srv/tor/ -name '*external-links.*'))
+

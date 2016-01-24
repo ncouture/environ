@@ -1,0 +1,32 @@
+#!/usr/bin/python
+#
+
+import sys
+import os
+
+def get_tax_data(price):
+    tps = price * 0.05
+    tvq = price * 0.09975
+    total = price + tps + tvq
+    return {'price': price,
+            'tps': tps,
+            'tvq': tvq,
+            'total': total}
+
+
+def get_total_table(tax_info):
+    with_tps = tax_info['price'] + tax_info['tps']
+    with_tvq = tax_info['price'] + tax_info['tvq']
+    print "| Prix            |           | {} |".format(tax_info['price'])
+    print "| TPS (5%)        | {}        | {} |".format(tax_info['tps'], with_tps)
+    print "| TVQ (9.975%)    | {}        | {} |".format(tax_info['tvq'], with_tvq)
+    print "|-----------------+-----------+----|"
+    print "| Total  |        | {} |".format(tax_info['total'])
+
+
+if not len(sys.argv) == 2:
+    print "Usage {} <price>".format(os.path.basename(sys.argv[0]))
+    sys.exit(1)
+
+price = float(sys.argv[1])
+get_total_table(get_tax_data(price))

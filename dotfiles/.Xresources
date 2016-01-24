@@ -1,0 +1,54 @@
+!xterm*VT100*Translations: #override \n\
+!  BackSpace:     string(0x7f) \n\
+!  Delete:        string(0x1b) string("[3~")
+! mkdir /usr/share/fonts/truetype/envy
+! cd /usr/share/fonts/truetype/envy
+! wget http://download.damieng.com/fonts/original/EnvyCodeR-PR7.zip -O envy.zip
+! unzip envy.zip
+! mkfontscale
+! mkfontdir
+! fc-cache -fv
+xterm*faceName: PragmataPro
+xterm*faceSize: 14
+xterm*title: xterm
+xterm*activeIcon: false
+xterm*iconFont: nil2
+xterm*boldMode: false
+xterm*colorMode: true
+xterm*color0: #000000
+xterm*color1: #aa0000
+xterm*color2: #00aa00
+xterm*color3: #aa5500
+xterm*color4: #0000aa
+xterm*color5: #aa00aa
+xterm*color6: #00aaaa
+xterm*color7: #aaaaaa
+xterm*color8: #555555
+xterm*color9: #ff5555
+xterm*color10: #55ff55
+xterm*color11: #ffff55
+xterm*color12: #7766ff
+xterm*color13: #ff55ff
+xterm*color14: #55ffff
+xterm*color15: #ffffff
+xterm*background: #303030
+xterm*foreground: #f6f3e8
+!xterm*foreground: #00ffff
+xterm*highlightColor: #778899
+xterm*highlightSelection: true
+xterm*eightBitInput: false
+xterm*metaSendsEscape: true
+xterm*saveLines: 10000
+xterm*scrollKey: true
+xterm*scrollBar: false
+xterm*rightScrollBar: true
+xterm*cutToBeginningOfLine: false
+xterm*loginShell: true
+xterm*cursesemul: false
+xterm*backarrowKeyIsErase: true
+xterm*ptyInitialErase: false
+xterm*internalBorder: 0
+xterm*transparent: true
+xterm*charClass:  33:48,37:48,43:48,45-47:48,64:48,126:48,95:48
+xterm*selectToClipboard: true
+Emacs.font: PragmataPro-14
